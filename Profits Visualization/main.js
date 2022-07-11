@@ -35,7 +35,12 @@ d3.csv("./data/revenues.csv").then((data) => {
   g.append("g")
     .attr("class", "x axis")
     .attr("transform", `translate(0, ${HEIGHT})`)
-    .call(xAxisCall);
+    .call(xAxisCall)
+    .selectAll("text")
+    .attr("y", "10")
+    .attr("x", "-5")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-40)");
 
   // Y AXIS
   const yAxisCall = d3.axisLeft(y).ticks(8);
@@ -46,7 +51,7 @@ d3.csv("./data/revenues.csv").then((data) => {
     .attr("class", "x axis-label")
     .attr("x", WIDTH / 2.5)
     .attr("transform", `translate(0, ${HEIGHT + 75})`)
-    .attr("font-size", "25px")
+    .attr("font-size", "22px")
     .text("Months");
 
   // Y LABER
@@ -55,9 +60,9 @@ d3.csv("./data/revenues.csv").then((data) => {
     .attr("transform", "rotate(-90)")
     .attr("x", -HEIGHT / 2)
     .attr("y", -80)
-    .attr("font-size", "25px")
+    .attr("font-size", "22px")
     .attr("text-anchor", "middle")
-    .text("Revenues");
+    .text("Revenues($)");
 
   const rects = g.selectAll("rect").data(data);
 
