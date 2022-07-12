@@ -1,0 +1,15 @@
+#chart-area {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  display: block;
+}
+
+#logo {
+  height: 50px;
+}
+
+.navbar-brand {
+  height: 60px;
+  padding: 5px 0px;
+}
