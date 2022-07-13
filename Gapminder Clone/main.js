@@ -17,6 +17,28 @@ const g = svg
   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`);
 
 let time = 0; // represent year
+let formattedData, interval;
+
+// TOOLTIP
+const tip = d3
+  .tip()
+  .attr("class", "d3-tip")
+  .html((d) => {
+    let text = `<strong style='font-size:13px'>Country:</strong> <span style='color:red; font-size:12px'>${d.country}</span><br>`;
+    text += `<strong style='font-size:13px'>Continent:</strong> <span style='color:red; font-size:12px'>${d.continent}</span><br>`;
+    text += `<strong style='font-size:13px'>Life Expectancy:</strong> <span style='color:red; font-size:12px'>${d3.format(
+      ".2f"
+    )(d.life_exp)}</span><br>`;
+    text += `<strong style='font-size:13px'>GDP Per Capita:</strong> <span style='color:red; font-size:12px'>${d3.format(
+      "$,.0f"
+    )(d.income)}</span><br>`;
+    text += `<strong style='font-size:13px'>Population:</strong> <span style='color:red; font-size:12px'>${d3.format(
+      ",.0f"
+    )(d.population)}</span><br>`;
+    return text;
+  });
+
+g.call(tip);
 
 // SCALES
 const x = d3.scaleLog().base(10).range([0, WIDTH]).domain([142, 150000]);
@@ -41,6 +63,33 @@ g.append("g")
 // Y axis
 const yAxisCall = d3.axisLeft(y);
 g.append("g").attr("class", `y axis`).call(yAxisCall);
+
+// LEGEND
+const continents = ["europe", "asia", "americas", "africa"];
+
+const legend = g
+  .append("g")
+  .attr("transform", `translate(${WIDTH - 10}, ${HEIGHT - 145})`);
+
+continents.forEach((continent, i) => {
+  const legendRow = legend
+    .append("g")
+    .attr("transform", `translate(0, ${i * 20})`);
+
+  legendRow
+    .append("rect")
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("fill", containerColor(continent));
+
+  legendRow
+    .append("text")
+    .attr("x", -8)
+    .attr("y", 10)
+    .style("text-transform", "capitalize")
+    .attr("text-anchor", "end")
+    .text(continent);
+});
 
 // LABELS
 const xLabel = g
@@ -72,7 +121,7 @@ const timeLabel = g
 d3.json(dataUrl)
   .then((data) => {
     // CLEAN DATA
-    const formattedData = data.map((year) => {
+    formattedData = data.map((year) => {
       return year["countries"]
         .filter((country) => {
           const dataExists = country.income && country.life_exp;
@@ -85,23 +134,63 @@ d3.json(dataUrl)
         });
     });
 
-    // run the code every .1 sencond
-    d3.interval(() => {
-      time < 214 ? time++ : (time = 0);
-
-      update(formattedData[time]);
-    }, 100);
-
     // first run for the visulaization
     update(formattedData[0]);
   })
   .catch((err) => console.log(err));
 
+function step() {
+  time < 214 ? time++ : (time = 0);
+  update(formattedData[time]);
+}
+
+$("#play-button").on("click", function () {
+  const button = $(this);
+
+  if (button.text() === "Play") {
+    button.text("Pause");
+    interval = setInterval(step, 100);
+  } else {
+    clearInterval(interval);
+    button.text("Play");
+  }
+});
+
+$("#reset-button").on("click", () => {
+  time = 0;
+  update(formattedData[0]);
+});
+
+$("#continent-select").on("change", () => {
+  update(formattedData[time]);
+});
+
+$("#date-slider").slider({
+  min: 1800,
+  max: 2014,
+  step: 1,
+  slide: (event, ui) => {
+    time = ui.value - 1800;
+    update(formattedData[time]);
+  },
+});
+
 function update(data) {
   // standard transition time for the visualization
   const t = d3.transition().duration(100);
 
-  const circles = g.selectAll("circle").data(data, (d) => d.country);
+  // FITER the continents
+  const selectedContinent = $("#continent-select").val();
+
+  const fiterdData = data.filter((d) => {
+    if (selectedContinent === "all") return true;
+    else {
+      return d.continent === selectedContinent;
+    }
+  });
+
+  // JOIN new data with the old elements.
+  const circles = g.selectAll("circle").data(fiterdData, (d) => d.country);
 
   // EXIT old elements not present in new data.
   circles.exit().remove();
@@ -111,6 +200,8 @@ function update(data) {
     .enter()
     .append("circle")
     .attr("fill", (d) => containerColor(d.continent))
+    .on("mouseover", tip.show)
+    .on("mouseout", tip.hide)
     .merge(circles)
     .transition(t)
     .attr("cy", (d) => y(d.life_exp))
@@ -119,4 +210,8 @@ function update(data) {
 
   // update the time label
   timeLabel.text(String(time + 1800));
+
+  // Update the slider
+  $("#year")[0].innerHTML = String(time + 1800);
+  $("#date-slider").slider("value", Number(time + 1800));
 }
