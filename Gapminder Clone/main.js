@@ -2,8 +2,8 @@ const dataUrl =
   "https://raw.githubusercontent.com/adamjanes/udemy-d3/master/05/5.10.0/data/data.json";
 
 const MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
-const WIDTH = 800 - MARGIN.LEFT - MARGIN.RIGHT;
-const HEIGHT = 500 - MARGIN.TOP - MARGIN.BOTTOM;
+let WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT;
+let HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM;
 
 const svg = d3
   .select("#chart-area")

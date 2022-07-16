@@ -19,7 +19,38 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <svg id="my_dataviz" width="800" height="430"></svg>
+    <div class="">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="row ml-3">
+            <div class="col-md-3">
+              <button id="play-button" class="btn btn-primary">Play</button>
+              <button id="reset-button" class="btn btn-primary">Reset</button>
+            </div>
+            <div class="col-md-3">
+              <select id="continent-select" class="form-control">
+                <option selected value="all">All</option>
+                <option value="europe">Europe</option>
+                <option value="asia">Asia</option>
+                <option value="americas">Americas</option>
+                <option value="africa">Africa</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <div id="slider-div">
+                <div id="date-slider"></div>
+                <label>Year: <span id="year">1800</span></label>
+              </div>
+            </div>
+          </div>
+          <div id="chart-area"></div>
+        </div>
+
+        <div class="col-md-6">
+          <svg id="world-map" width="770" height="430"></svg>
+        </div>
+      </div>
+    </div>
 
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -46,6 +77,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+    <script src="../Gapminder Clone/main.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>

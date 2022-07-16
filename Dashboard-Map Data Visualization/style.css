@@ -1,4 +1,45 @@
-#my_dataviz {
+#world-map {
   position: absolute;
   right: 0;
+}
+
+#chart-area svg {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  margin-top: 10px;
+}
+
+.container {
+  margin-top: 50px;
+}
+
+.d3-tip {
+  background-color: rgba(128, 128, 128, 0.1);
+  padding: 10px;
+  border-radius: 20px;
+}
+
+#reset-button,
+#play-button,
+#slider-div {
+  float: left;
+  margin-right: 10px;
+}
+
+#slider-div {
+  margin-top: 14px;
+  width: 200px;
+}
+
+#reset-button,
+#play-button {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+#continent-select {
+  width: 150px;
+  float: right;
+  margin-top: 5px;
 }

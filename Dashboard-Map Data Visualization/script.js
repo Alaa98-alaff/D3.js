@@ -1,7 +1,7 @@
 // The svg
-var svg = d3.select("svg"),
-  width = +svg.attr("width"),
-  height = +svg.attr("height");
+var mapSVG = d3.select("#world-map"),
+  width = +mapSVG.attr("width"),
+  height = +mapSVG.attr("height");
 
 // Map and projection
 var path = d3.geoPath();
@@ -12,27 +12,12 @@ var projection = d3
   .translate([width / 2, height / 2]);
 
 // Data and color scale
-var data = d3.map();
 var colorScale = d3
   .scaleThreshold()
   .domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
   .range(d3.schemeBlues[7]);
 
-const g = svg.append("g").attr("class", "main-container");
-
-// TOOLTIP
-const tip = d3
-  .tip()
-  .attr("class", "d3-tip")
-  .html((d) => {
-    let text = `<span style='font-size:11px'>Country:</span> <span style='color:red; font-size:10px'>${d.properties.name}</span><br>`;
-    text += `<span style='font-size:11px'>Population:</span> <span style='color:red; font-size:10px'>${d3.format(
-      ",.0f"
-    )(d.total)}</span><br>`;
-    return text;
-  });
-
-g.call(tip);
+const mapG = mapSVG.append("g").attr("class", "main-container");
 
 function handleData() {
   d3.json(
@@ -42,7 +27,7 @@ function handleData() {
       for (let i = 0; i < geoData.features.length; i++) {
         for (let j = 0; j < pop.length; j++) {
           if (geoData.features[i].id === pop[j].iso_code) {
-            geoData.features[i].total = pop[j][2021];
+            geoData.features[i].total = pop[j][2014];
           }
 
           // Handle the missing data
@@ -71,22 +56,23 @@ function handleData() {
           }
         }
       }
-      update(geoData);
+      start(geoData);
     });
   });
 }
 
-function handleMouseOver(d) {
+function handleMouseOver(data) {
   d3.select(this).style("stroke", "black");
 }
 
-function handleMouseOut(d) {
+function handleMouseOut(data) {
   d3.select(this).style("stroke", "none");
 }
 
-function update(data) {
+function start(data) {
   // Draw the map
-  g.selectAll("path")
+  mapG
+    .selectAll("path")
     .data(data.features)
     .enter()
     .append("path")
