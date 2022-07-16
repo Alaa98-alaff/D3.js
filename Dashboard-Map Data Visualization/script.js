@@ -18,36 +18,69 @@ var colorScale = d3
   .domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
   .range(d3.schemeBlues[7]);
 
-d3.queue()
-  .defer(
-    d3.json,
-    "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
-  )
-  .defer(
-    d3.csv,
-    "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world_population.csv",
-    function (d) {
-      data.set(d.code, +d.pop);
-    }
-  )
-  .await(ready);
+const g = svg.append("g").attr("class", "main-container");
 
-function ready(error, topo) {
-  console.log(topo);
+// TOOLTIP
+const tip = d3
+  .tip()
+  .attr("class", "d3-tip")
+  .html((d) => {
+    console.log(d);
+    let text = `<span style='font-size:11px'>Country:</span> <span style='color:red; font-size:10px'>${d.properties.name}</span><br>`;
+    text += `<span style='font-size:11px'>Population:</span> <span style='color:red; font-size:10px'>${d3.format(
+      ",.0f"
+    )(d.total)}</span><br>`;
+    return text;
+  });
+
+g.call(tip);
+
+function handleData() {
+  d3.json(
+    "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
+  ).then((geoData) => {
+    d3.csv("data.csv").then((pop) => {
+      for (let i = 0; i < geoData.features.length; i++) {
+        for (let j = 0; j < pop.length; j++) {
+          if (geoData.features[i].id === pop[j].iso_code)
+            geoData.features[i].total = pop[j].population;
+
+          switch (geoData.features[i].id) {
+            case "SDS":
+              geoData.features[i].total = "11190000 ";
+              break;
+            case "ABV":
+              geoData.features[i].total = "3500000";
+              break;
+            case "OSA":
+              geoData.features[i].total = "1873000";
+              break;
+            case "ATF":
+              geoData.features[i].total = "100";
+          }
+        }
+      }
+      update(geoData);
+    });
+  });
+}
+
+function update(data) {
   // Draw the map
-  svg
-    .append("g")
-    .selectAll("path")
-    .data(topo.features)
+  g.selectAll("path")
+    .data(data.features)
     .enter()
     .append("path")
     // draw each country
     .attr("d", d3.geoPath().projection(projection))
     //   set the color of each country
-    .attr("fill", function (d) {
-      d.total = data.get(d.id) || 0;
-      console.log(d.total);
+    .attr("fill", (d) => {
       return colorScale(d.total);
-    })
-    .on("mouseover", (d) => console.log(d));
+    });
 }
+
+function init() {
+  handleData();
+}
+
+init();
