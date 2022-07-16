@@ -7,7 +7,7 @@ var svg = d3.select("svg"),
 var path = d3.geoPath();
 var projection = d3
   .geoMercator()
-  .scale(70)
+  .scale(125)
   .center([0, 20])
   .translate([width / 2, height / 2]);
 
@@ -25,7 +25,6 @@ const tip = d3
   .tip()
   .attr("class", "d3-tip")
   .html((d) => {
-    console.log(d);
     let text = `<span style='font-size:11px'>Country:</span> <span style='color:red; font-size:10px'>${d.properties.name}</span><br>`;
     text += `<span style='font-size:11px'>Population:</span> <span style='color:red; font-size:10px'>${d3.format(
       ",.0f"
@@ -39,12 +38,14 @@ function handleData() {
   d3.json(
     "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
   ).then((geoData) => {
-    d3.csv("data.csv").then((pop) => {
+    d3.csv("data/population-data.csv").then((pop) => {
       for (let i = 0; i < geoData.features.length; i++) {
         for (let j = 0; j < pop.length; j++) {
-          if (geoData.features[i].id === pop[j].iso_code)
-            geoData.features[i].total = pop[j].population;
+          if (geoData.features[i].id === pop[j].iso_code) {
+            geoData.features[i].total = pop[j][2021];
+          }
 
+          // Handle the missing data
           switch (geoData.features[i].id) {
             case "SDS":
               geoData.features[i].total = "11190000 ";
@@ -57,12 +58,30 @@ function handleData() {
               break;
             case "ATF":
               geoData.features[i].total = "100";
+              break;
+            case "ESH":
+              geoData.features[i].total = "4984";
+              break;
+            case "FLK":
+              geoData.features[i].total = "3530";
+              break;
+            case "TWN":
+              geoData.features[i].total = "23852000";
+              break;
           }
         }
       }
       update(geoData);
     });
   });
+}
+
+function handleMouseOver(d) {
+  d3.select(this).style("stroke", "black");
+}
+
+function handleMouseOut(d) {
+  d3.select(this).style("stroke", "none");
 }
 
 function update(data) {
@@ -76,7 +95,9 @@ function update(data) {
     //   set the color of each country
     .attr("fill", (d) => {
       return colorScale(d.total);
-    });
+    })
+    .on("mouseover", handleMouseOver)
+    .on("mouseout", handleMouseOut);
 }
 
 function init() {
