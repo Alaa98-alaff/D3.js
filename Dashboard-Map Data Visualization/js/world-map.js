@@ -1,10 +1,11 @@
+import { getHoveredData, handleUnHovered } from "./gdp-chart.js";
+
 // The svg
 var mapSVG = d3.select("#world-map"),
   width = +mapSVG.attr("width"),
   height = +mapSVG.attr("height");
 
 // Map and projection
-var path = d3.geoPath();
 var projection = d3
   .geoMercator()
   .scale(125)
@@ -63,10 +64,12 @@ function handleData() {
 
 function handleMouseOver(data) {
   d3.select(this).style("stroke", "black");
+  getHoveredData(data.properties.name);
 }
 
 function handleMouseOut(data) {
   d3.select(this).style("stroke", "none");
+  handleUnHovered(data.properties.name);
 }
 
 function start(data) {
