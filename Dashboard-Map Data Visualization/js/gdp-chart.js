@@ -1,42 +1,6 @@
-export function getHoveredData(country) {
-  // HANDLE WHEN PLAY BUTTON CLIKED
-  clearInterval(interval);
+import { handleData } from "./world-map.js";
 
-  // SET HOVERED COUNTRY
-  formattedData[time].forEach((data) => {
-    if (data.country === country) {
-      data.hoverd = true;
-
-      // circles._groups[0].forEach((d) => {
-      //   console.log(d);
-
-      //   d.setAttribute("stroke", "red");
-      // });
-
-      // tip.show(data);
-    } else data.hoverd = false;
-  });
-  update(formattedData[time], true);
-}
-
-export function handleUnHovered(country) {
-  // HANDLE WHEN PLAY BUTTON CLIKED
-  if ($("#play-button").text() === "Pause") interval = setInterval(step, 100);
-
-  // SET HOVERED COUNTRY
-  formattedData[time].forEach((data) => {
-    if (data.country === country) {
-      data.hoverd = false;
-
-      circles._groups[0].forEach((d) => {
-        d.setAttribute("stroke", "none");
-      });
-    } else data.hoverd = true;
-  });
-  update(formattedData[time], true);
-}
-
-const dataUrl =
+export const dataUrl =
   "https://raw.githubusercontent.com/adamjanes/udemy-d3/master/05/5.10.0/data/data.json";
 
 const MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
@@ -54,8 +18,51 @@ const g = svg
   .attr("class", "x axis")
   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`);
 
-let time = 0; // represent year
-let formattedData, interval, circles;
+export let time = 0; // represent year
+export let formattedData, interval, circles;
+
+export function getHoveredData(country) {
+  // HANDLE WHEN PLAY BUTTON CLIKED
+  clearInterval(interval);
+
+  // SET HOVERED COUNTRY
+  formattedData[time].forEach((data) => {
+    if (data.country === country) {
+      data.hoverd = true;
+
+      // circles._groups[0].forEach((d) => {
+      //   if (d.getAttribute("country") === country) {
+      //     console.log(d);
+      //     g.append("rect")
+      //       .attr("class", "d3-tip-fix")
+      //       .attr(
+      //         "transform",
+      //         `translate(${195.71319812106694}, ${194.7188888888889})`
+      //       )
+      //       .text("continentffffffffffff");
+      //   }
+      // });
+    } else data.hoverd = false;
+  });
+  update(formattedData[time], true);
+}
+
+export function handleUnHovered(country) {
+  // HANDLE WHEN PLAY BUTTON CLIKED
+  if ($("#play-button").text() === "Pause") interval = setInterval(step, 100);
+
+  // SET HOVERED COUNTRY
+  formattedData[time].forEach((data) => {
+    if (data.country === country) {
+      data.hoverd = false;
+
+      // circles._groups[0].forEach((d) => {
+      //   d.setAttribute("stroke", "none");
+      // });
+    } else data.hoverd = true;
+  });
+  update(formattedData[time], true);
+}
 
 // TOOLTIP
 const tip = d3
@@ -174,12 +181,14 @@ d3.json(dataUrl)
 
     // first run for the visulaization
     update(formattedData[0]);
+    handleData(time, formattedData);
   })
   .catch((err) => console.log(err));
 
 function step() {
   time < 214 ? time++ : (time = 0);
   update(formattedData[time]);
+  handleData(time, formattedData);
 }
 
 $("#play-button").on("click", function () {
@@ -197,10 +206,12 @@ $("#play-button").on("click", function () {
 $("#reset-button").on("click", () => {
   time = 0;
   update(formattedData[0]);
+  handleData(0, formattedData);
 });
 
 $("#continent-select").on("change", () => {
   update(formattedData[time]);
+  handleData(time, formattedData);
 });
 
 $("#date-slider").slider({
@@ -210,6 +221,7 @@ $("#date-slider").slider({
   slide: (event, ui) => {
     time = ui.value - 1800;
     update(formattedData[time]);
+    handleData(time, formattedData);
   },
 });
 
@@ -248,7 +260,8 @@ function update(data, hoverd) {
     .attr("opacity", (d) => {
       if (hoverd && d.hoverd) return "1";
       else if (hoverd && !d.hoverd) return "0";
-    });
+    })
+    .attr("country", (d) => d.country);
 
   // update the time label
   timeLabel.text(String(time + 1800));
