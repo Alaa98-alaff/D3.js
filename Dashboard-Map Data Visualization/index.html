@@ -21,7 +21,7 @@
   <body>
     <div class="">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 col-sm-12">
           <div class="row ml-3">
             <div class="col-md-3">
               <button id="play-button" class="btn btn-primary">Play</button>
@@ -39,15 +39,22 @@
             <div class="col-md-4">
               <div id="slider-div">
                 <div id="date-slider"></div>
-                <label>Year: <span id="year">1800</span></label>
+                <label style="font-size: 12px"
+                  >Year: <span id="year">1800</span></label
+                >
               </div>
             </div>
           </div>
           <div id="chart-area"></div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 col-sm-12">
           <svg id="world-map" width="770" height="430"></svg>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <div id="chart"></div>
         </div>
       </div>
     </div>
@@ -79,5 +86,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
     <script type="module" src="./js/gdp-chart.js"></script>
     <script type="module" src="./js/world-map.js"></script>
+    <script type="module" src="./js/line-chart.js"></script>
   </body>
 </html>

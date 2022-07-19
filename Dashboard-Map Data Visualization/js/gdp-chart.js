@@ -1,11 +1,10 @@
 import { handleData } from "./world-map.js";
-
-export const dataUrl =
-  "https://raw.githubusercontent.com/adamjanes/udemy-d3/master/05/5.10.0/data/data.json";
-
-const MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
-let WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT;
-let HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM;
+import {
+  countiresDataUrl,
+  MARGIN,
+  WIDTH,
+  HEIGHT,
+} from "../helpers/constants.js";
 
 const svg = d3
   .select("#chart-area")
@@ -139,9 +138,9 @@ continents.forEach((continent, i) => {
 // LABELS
 const xLabel = g
   .append("text")
-  .attr("y", HEIGHT + 60)
+  .attr("y", HEIGHT + 50)
   .attr("x", WIDTH / 2)
-  .attr("font-size", "20px")
+  .attr("font-size", "18px")
   .attr("text-anchor", "middle")
   .text("GDP Per Capita ($)");
 
@@ -149,21 +148,20 @@ const yLabel = g
   .append("text")
   .attr("transform", "rotate(-90)")
   .attr("y", -50)
-  .attr("x", -170)
-  .attr("font-size", "20px")
+  .attr("x", -110)
+  .attr("font-size", "18px")
   .attr("text-anchor", "middle")
   .text("Life Expectancy (Years)");
 
 const timeLabel = g
   .append("text")
+  .attr("class", "year")
   .attr("y", HEIGHT - 20)
   .attr("x", WIDTH - 40)
   .attr("opacity", "0.4")
-  .attr("text-anchor", "middle")
-  .attr("font-size", "40px")
   .text("1800");
 
-d3.json(dataUrl)
+d3.json(countiresDataUrl)
   .then((data) => {
     // CLEAN DATA
     formattedData = data.map((year) => {

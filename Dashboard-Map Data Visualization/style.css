@@ -1,17 +1,38 @@
-#world-map {
-  position: absolute;
-  right: 0;
+@import url("https://fonts.googleapis.com/css?family=Overpass");
+
+* {
+  font-family: "Overpass", sans-serif;
 }
 
-#chart-area svg {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  margin-top: 10px;
+text {
+  font-size: 12px;
 }
 
-.container {
-  margin-top: 50px;
+.axis path,
+.axis line,
+.gridline line {
+  fill: none;
+  opacity: 0.1;
+  shape-rendering: crispEdges;
+}
+
+.lineDots {
+  cursor: pointer;
+  fill: rgb(164, 140, 140);
+  fill-opacity: 0.5;
+  stroke: #17ead9;
+  stroke-opacity: 0.4;
+  transition: all 0.2s ease-in-out;
+}
+
+.lineDots:hover {
+  fill-opacity: 1;
+  stroke-width: 10px;
+}
+
+path.domain {
+  fill: none;
+  opacity: 0.4;
 }
 
 /* .d3-tip-fix {
@@ -48,4 +69,9 @@
   width: 150px;
   float: right;
   margin-top: 5px;
+}
+
+.year {
+  font-size: 24px;
+  text-anchor: middle;
 }
