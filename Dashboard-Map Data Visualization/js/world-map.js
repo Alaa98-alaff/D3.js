@@ -1,5 +1,10 @@
-import { getHoveredData, handleUnHovered } from "./gdp-chart.js";
+import {
+  getHoveredData,
+  handleUnHovered,
+  handleEnterdPath,
+} from "./gdp-chart.js";
 import { filterMapData } from "../helpers/filterMapData.js";
+
 let geoData;
 
 // Get the world map DATA
@@ -42,6 +47,10 @@ function handleMouseOut(data) {
   handleUnHovered(data.properties.name);
 }
 
+function handleMouseEnter(data) {
+  handleEnterdPath(data);
+}
+
 function renderMap(data) {
   // JOIN new data with the old elements.
   let paths = mapG.selectAll("path").data(data.features, (d) => d);
@@ -59,5 +68,6 @@ function renderMap(data) {
     .attr("fill", (d) => colorScale(d.total))
     .merge(paths)
     .on("mouseover", handleMouseOver)
-    .on("mouseout", handleMouseOut);
+    .on("mouseout", handleMouseOut)
+    .on("click", handleMouseEnter);
 }

@@ -57,6 +57,33 @@ const grp = chart
 chart.append("g").attr("class", "x-axis");
 chart.append("g").attr("class", "y-axis");
 
+// X LABEL
+const xLabel = grp
+  .append("text")
+  .attr("class", "Label")
+  .attr("y", HEIGHT + 60)
+  .attr("x", WIDTH / 2 + 120)
+  .text("Years");
+
+// Y LABEL
+const yLabel = grp
+  .append("text")
+  .attr("y", 45)
+  .attr("class", "Label")
+  .attr("x", -130)
+  .attr("transform", "rotate(-90)")
+  .text("Population");
+
+// COUNTRY LABEL
+const countryLabel = grp
+  .append("text")
+  .attr("class", "year")
+  .attr("y", HEIGHT - 20)
+  .attr("x", WIDTH + 50)
+  .attr("opacity", "0.4")
+  .attr("text-anchor", "end")
+  .text("World");
+
 // Add empty path
 const path = grp
   .append("path")
@@ -94,10 +121,18 @@ function updateAxes(data, chart, xScale, yScale) {
     .select(".x-axis")
     .attr("transform", `translate(0,${HEIGHT})`)
     .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+
   chart
     .select(".y-axis")
     .attr("transform", `translate(0, 0)`)
-    .call(d3.axisLeft(yScale).ticks(data.popularity));
+    .call(
+      d3
+        .axisLeft(yScale)
+        .ticks(data.popularity)
+        .tickFormat((d) =>
+          d > 10 ? d3.format(".2s")(d).replace("G", "B") : d3.format(".2s")(d)
+        )
+    );
 }
 
 function updatePath(data, line) {
@@ -106,7 +141,7 @@ function updatePath(data, line) {
   const pathLength = updatedPath.node().getTotalLength();
   // D3 provides lots of transition options, have a play around here:
   // https://github.com/d3/d3-transition
-  const transitionPath = d3.transition().ease(d3.easeSin).duration(2500);
+  const transitionPath = d3.transition().ease(d3.easeSin).duration(2000);
   updatedPath
     .attr("stroke-dashoffset", pathLength)
     .attr("stroke-dasharray", pathLength)
@@ -114,9 +149,18 @@ function updatePath(data, line) {
     .attr("stroke-dashoffset", 0);
 }
 
-function updateChart(data) {
+export function updateChart(data, countryData = "World") {
   const { yScale, xScale } = updateScales(data);
   const line = createLine(xScale, yScale);
   updateAxes(data, chart, xScale, yScale);
   updatePath(data, line);
+
+  // update the country label
+  if (
+    countryData !== "World" &&
+    countryData.properties.name.split(" ").length > 2
+  )
+    countryLabel.text(countryData.id);
+  else if (countryData !== "World")
+    countryLabel.text(countryData.properties.name);
 }

@@ -5,6 +5,7 @@ import {
   WIDTH,
   HEIGHT,
 } from "../helpers/constants.js";
+import { updateChart } from "./line-chart.js";
 
 const svg = d3
   .select("#chart-area")
@@ -44,6 +45,23 @@ export function getHoveredData(country) {
     } else data.hoverd = false;
   });
   update(formattedData[time], true);
+}
+
+export function handleEnterdPath(data) {
+  // HANDLE WHEN PLAY BUTTON CLIKED
+  clearInterval(interval);
+
+  let lineData = [];
+  for (let i = 0; i < 215; i++) {
+    let totalPop = 0;
+    for (let j = 0; j < formattedData[i].length; j++) {
+      if (formattedData[i][j].country === data.properties.name) {
+        totalPop += formattedData[i][j].population;
+        lineData.push({ year: i + 1800, popularity: totalPop });
+      }
+    }
+  }
+  updateChart(lineData, data);
 }
 
 export function handleUnHovered(country) {
@@ -140,8 +158,7 @@ const xLabel = g
   .append("text")
   .attr("y", HEIGHT + 50)
   .attr("x", WIDTH / 2)
-  .attr("font-size", "18px")
-  .attr("text-anchor", "middle")
+  .attr("class", "Label")
   .text("GDP Per Capita ($)");
 
 const yLabel = g
@@ -149,8 +166,7 @@ const yLabel = g
   .attr("transform", "rotate(-90)")
   .attr("y", -50)
   .attr("x", -110)
-  .attr("font-size", "18px")
-  .attr("text-anchor", "middle")
+  .attr("class", "Label")
   .text("Life Expectancy (Years)");
 
 const timeLabel = g
