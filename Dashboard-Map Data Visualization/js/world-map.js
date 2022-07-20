@@ -20,8 +20,8 @@ let mapSVG = d3.select("#world-map"),
 // Map and projection
 let projection = d3
   .geoMercator()
-  .scale(125)
-  .center([0, 20])
+  .scale(130)
+  .center([0, 45])
   .translate([width / 2, height / 2]);
 
 // Data and color scale

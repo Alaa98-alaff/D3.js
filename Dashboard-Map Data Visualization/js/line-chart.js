@@ -1,11 +1,15 @@
 import {
   countiresDataUrl,
-  HEIGHT,
-  WIDTH,
-  MARGIN,
+  // HEIGHT,
+  // WIDTH,
+  // MARGIN,
 } from "../helpers/constants.js";
 
 let lineData = [];
+
+let MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
+let WIDTH = 650 - MARGIN.LEFT - MARGIN.RIGHT;
+let HEIGHT = 340 - MARGIN.TOP - MARGIN.BOTTOM;
 
 d3.json(countiresDataUrl)
   .then((data) => {
@@ -40,6 +44,7 @@ d3.json(countiresDataUrl)
   .catch((err) => console.log(err));
 
 let line;
+
 // Create SVG and padding for the chart
 const svg = d3
   .select("#chart")
@@ -150,6 +155,15 @@ function updatePath(data, line) {
 }
 
 export function updateChart(data, countryData = "World") {
+  svg
+    .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+    .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT);
+  chart.attr("transform", `translate(${MARGIN.LEFT - 5},${MARGIN.TOP})`);
+  grp.attr("transform", `translate(-${MARGIN.LEFT},-${MARGIN.TOP})`);
+  xLabel.attr("y", HEIGHT + 60).attr("x", WIDTH / 2 + 120);
+  countryLabel.attr("y", HEIGHT - 20).attr("x", WIDTH + 50);
+  path.attr("transform", `translate(${MARGIN.LEFT},0)`);
+
   const { yScale, xScale } = updateScales(data);
   const line = createLine(xScale, yScale);
   updateAxes(data, chart, xScale, yScale);
@@ -164,3 +178,19 @@ export function updateChart(data, countryData = "World") {
   else if (countryData !== "World")
     countryLabel.text(countryData.properties.name);
 }
+
+const resetPixels = (w, y, l, b) => {
+  MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
+  WIDTH = w - MARGIN.LEFT - MARGIN.RIGHT;
+  HEIGHT = y - MARGIN.TOP - MARGIN.BOTTOM;
+};
+
+window.addEventListener("resize", (e) => {
+  if (window.innerWidth <= 1320) {
+    resetPixels(520, 240, 80, 80);
+    updateChart(lineData);
+  } else {
+    resetPixels(650, 340, 100, 100);
+    updateChart(lineData);
+  }
+});

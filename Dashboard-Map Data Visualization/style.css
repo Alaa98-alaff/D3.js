@@ -47,6 +47,10 @@ path.domain {
   border-radius: 20px;
 }
 
+.row {
+  margin: 0;
+}
+
 #reset-button,
 #play-button,
 #slider-div {
@@ -84,4 +88,18 @@ path.domain {
   font-size: 14px;
   text-anchor: middle;
   fill: rgb(140, 84, 84);
+}
+
+@media (max-width: 1320px) {
+  .media {
+    -ms-flex: 0 0 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 1320px) {
+  .world-map {
+    justify-content: flex-end !important;
+  }
 }

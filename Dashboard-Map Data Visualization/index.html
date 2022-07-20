@@ -21,7 +21,9 @@
   <body>
     <div class="">
       <div class="row">
-        <div class="col-md-6 col-sm-12">
+        <div
+          class="media col-lg-4 col-md-12 col-sm-12 d-flex justify-content-center p-0"
+        >
           <div class="row ml-3">
             <div class="col-md-3">
               <button id="play-button" class="btn btn-primary">Play</button>
@@ -45,15 +47,26 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- <div class="col-md-8 col-sm-12 d-flex justify-content-end"> -->
+        <div
+          class="media col-lg-8 col-md-12 col-sm-12 d-flex justify-content-center p-0 world-map"
+        >
+          <svg id="world-map" width="840" height="580"></svg>
+        </div>
+      </div>
+
+      <div class="row">
+        <div
+          class="col-lg-6 col-md-12 col-sm-12 d-flex justify-content-center p-0"
+        >
           <div id="chart-area"></div>
         </div>
 
-        <div class="col-md-6 col-sm-12">
-          <svg id="world-map" width="770" height="430"></svg>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6 col-sm-12">
+        <div
+          class="col-lg-6 col-md-12 col-sm-12 d-flex justify-content-center p-0"
+        >
           <div id="chart"></div>
         </div>
       </div>

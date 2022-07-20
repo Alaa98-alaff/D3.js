@@ -1,11 +1,15 @@
 import { handleData } from "./world-map.js";
 import {
   countiresDataUrl,
-  MARGIN,
-  WIDTH,
-  HEIGHT,
+  // MARGIN,
+  // WIDTH,
+  // HEIGHT,
 } from "../helpers/constants.js";
 import { updateChart } from "./line-chart.js";
+
+let MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
+let WIDTH = 650 - MARGIN.LEFT - MARGIN.RIGHT;
+let HEIGHT = 340 - MARGIN.TOP - MARGIN.BOTTOM;
 
 const svg = d3
   .select("#chart-area")
@@ -117,14 +121,15 @@ const xAxisCall = d3
   .tickValues([400, 4000, 40000])
   .tickFormat(d3.format("$"));
 
-g.append("g")
+const gx = g
+  .append("g")
   .attr("transform", `translate(0, ${HEIGHT})`)
   .attr("class", `x axis`)
   .call(xAxisCall);
 
 // Y axis
 const yAxisCall = d3.axisLeft(y);
-g.append("g").attr("class", `y axis`).call(yAxisCall);
+const gy = g.append("g").attr("class", `y axis`).call(yAxisCall);
 
 // LEGEND
 const continents = ["europe", "asia", "americas", "africa"];
@@ -240,6 +245,20 @@ $("#date-slider").slider({
 });
 
 function update(data, hoverd) {
+  // UPDATE WIDTH AND HEIGHT
+  svg
+    .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
+    .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM);
+
+  g.attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`);
+  x.range([0, WIDTH]);
+  y.range([HEIGHT, 0]);
+  gx.attr("transform", `translate(0, ${HEIGHT})`);
+  gy.call(yAxisCall);
+  legend.attr("transform", `translate(${WIDTH - 10}, ${HEIGHT - 145})`);
+  xLabel.attr("y", HEIGHT + 50).attr("x", WIDTH / 2);
+  timeLabel.attr("y", HEIGHT - 20).attr("x", WIDTH - 40);
+
   // standard transition time for the visualization
   const t = d3.transition().duration(100);
 
@@ -284,3 +303,19 @@ function update(data, hoverd) {
   $("#year")[0].innerHTML = String(time + 1800);
   $("#date-slider").slider("value", Number(time + 1800));
 }
+
+const resetPixels = (w, y, l, b) => {
+  MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
+  WIDTH = w - MARGIN.LEFT - MARGIN.RIGHT;
+  HEIGHT = y - MARGIN.TOP - MARGIN.BOTTOM;
+};
+
+window.addEventListener("resize", (e) => {
+  if (window.innerWidth <= 1320) {
+    resetPixels(520, 240, 80, 80);
+    update(formattedData[time]);
+  } else {
+    resetPixels(650, 340, 100, 100);
+    update(formattedData[time]);
+  }
+});
