@@ -22,14 +22,23 @@
     <div class="">
       <div class="row">
         <div
-          class="media col-lg-4 col-md-12 col-sm-12 d-flex justify-content-center p-0"
+          class="media col-lg-5 col-md-12 col-sm-12 d-flex justify-content-center p-0"
+        >
+          <div class="row mt-4">
+            <div id="chart-area"></div>
+            <div id="chart"></div>
+          </div>
+        </div>
+
+        <div
+          class="media col-lg-7 col-md-12 col-sm-12 d-flex justify-content-center p-0 world-map"
         >
           <div class="row ml-3">
-            <div class="col-md-3">
+            <div class="col-sm-3 d-flex mt-2">
               <button id="play-button" class="btn btn-primary">Play</button>
               <button id="reset-button" class="btn btn-primary">Reset</button>
             </div>
-            <div class="col-md-3">
+            <div class="col-sm-3 mt-2">
               <select id="continent-select" class="form-control">
                 <option selected value="all">All</option>
                 <option value="europe">Europe</option>
@@ -38,7 +47,7 @@
                 <option value="africa">Africa</option>
               </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-sm-4 mt-2">
               <div id="slider-div">
                 <div id="date-slider"></div>
                 <label style="font-size: 12px"
@@ -46,28 +55,8 @@
                 >
               </div>
             </div>
+            <svg id="world-map" width="840" height="580"></svg>
           </div>
-        </div>
-
-        <!-- <div class="col-md-8 col-sm-12 d-flex justify-content-end"> -->
-        <div
-          class="media col-lg-8 col-md-12 col-sm-12 d-flex justify-content-center p-0 world-map"
-        >
-          <svg id="world-map" width="840" height="580"></svg>
-        </div>
-      </div>
-
-      <div class="row">
-        <div
-          class="col-lg-6 col-md-12 col-sm-12 d-flex justify-content-center p-0"
-        >
-          <div id="chart-area"></div>
-        </div>
-
-        <div
-          class="col-lg-6 col-md-12 col-sm-12 d-flex justify-content-center p-0"
-        >
-          <div id="chart"></div>
         </div>
       </div>
     </div>
