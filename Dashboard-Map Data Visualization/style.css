@@ -4,8 +4,21 @@
   font-family: "Overpass", sans-serif;
 }
 
+html {
+  font-size: 62.5%;
+}
+@media (max-width: 90rem) {
+  html {
+    font-size: 55.5%;
+  }
+}
+
+body {
+  font-size: 1.6rem;
+}
+
 text {
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 
 .axis path,
@@ -43,8 +56,17 @@ path.domain {
 
 .d3-tip {
   background-color: rgba(128, 128, 128, 0.1);
-  padding: 10px;
-  border-radius: 20px;
+  padding: 1rem;
+  border-radius: 2rem;
+}
+
+.strong {
+  font-size: 1.1rem;
+}
+
+.span-tip {
+  color: rgb(250, 13, 13);
+  font-size: 1rem;
 }
 
 .row {
@@ -57,30 +79,32 @@ path.domain {
 #play-button,
 #slider-div {
   float: left;
-  margin-right: 10px;
-  width: 100px;
-  height: 50px;
+  margin-right: 1rem;
+  width: 10rem;
+  height: 5rem;
+  font-size: 1.7rem;
 }
 
 #slider-div {
-  margin-top: 20px;
-  width: 230px;
+  margin-top: 2rem;
+  width: 23rem;
 }
 
 #reset-button,
 #play-button {
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 #continent-select {
-  width: 170px;
+  width: 17rem;
   float: right;
-  margin-top: 10px;
+  height: 3rem;
+  margin-top: 1.3rem;
 }
 
 .year {
-  font-size: 22px;
+  font-size: 2.2rem;
   text-anchor: middle;
 }
 
@@ -89,7 +113,7 @@ path.domain {
 }
 
 .Label {
-  font-size: 14px;
+  font-size: 1.4rem;
   text-anchor: middle;
   fill: rgb(140, 84, 84);
 }

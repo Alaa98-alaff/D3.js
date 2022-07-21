@@ -7,6 +7,9 @@ import {
 } from "../helpers/constants.js";
 import { updateChart } from "./line-chart.js";
 
+export let time = 0; // represent year
+export let formattedData, interval, circles;
+
 let MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
 let WIDTH = 650 - MARGIN.LEFT - MARGIN.RIGHT;
 let HEIGHT = 340 - MARGIN.TOP - MARGIN.BOTTOM;
@@ -21,9 +24,6 @@ const g = svg
   .append("g")
   .attr("class", "x axis")
   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`);
-
-export let time = 0; // represent year
-export let formattedData, interval, circles;
 
 export function getHoveredData(country) {
   // HANDLE WHEN PLAY BUTTON CLIKED
@@ -90,15 +90,15 @@ const tip = d3
   .tip()
   .attr("class", "d3-tip")
   .html((d) => {
-    let text = `<strong style='font-size:13px'>Country:</strong> <span style='color:red; font-size:12px'>${d.country}</span><br>`;
-    text += `<strong style='font-size:13px'>Continent:</strong> <span style='color:red; font-size:12px'>${d.continent}</span><br>`;
-    text += `<strong style='font-size:13px'>Life Expectancy:</strong> <span style='color:red; font-size:12px'>${d3.format(
+    let text = `<strong class= 'strong'>Country:</strong> <span class ='span-tip'>${d.country}</span><br>`;
+    text += `<strong class= 'strong'>Continent:</strong> <span class ='span-tip'>${d.continent}</span><br>`;
+    text += `<strong class= 'strong'>Life Expectancy:</strong> <span class ='span-tip'>${d3.format(
       ".2f"
     )(d.life_exp)}</span><br>`;
-    text += `<strong style='font-size:13px'>GDP Per Capita:</strong> <span style='color:red; font-size:12px'>${d3.format(
+    text += `<strong class= 'strong'>GDP Per Capita:</strong> <span class ='span-tip'>${d3.format(
       "$,.0f"
     )(d.income)}</span><br>`;
-    text += `<strong style='font-size:13px'>Population:</strong> <span style='color:red; font-size:12px'>${d3.format(
+    text += `<strong class= 'strong'>Population:</strong> <span class ='span-tip'>${d3.format(
       ",.0f"
     )(d.population)}</span><br>`;
     return text;
@@ -198,6 +198,12 @@ d3.json(countiresDataUrl)
         });
     });
 
+    if (window.innerWidth <= 1320) {
+      resetPixels(520, 240, 80, 80);
+    } else {
+      resetPixels(650, 340, 100, 100);
+    }
+
     // first run for the visulaization
     update(formattedData[0]);
     handleData(time, formattedData);
@@ -283,7 +289,9 @@ function update(data, hoverd) {
     .enter()
     .append("circle")
     .attr("fill", (d) => containerColor(d.continent))
-    .on("mouseover", tip.show)
+    .on("mouseover", (d) => {
+      tip.show(d);
+    })
     .on("mouseout", tip.hide)
     .merge(circles)
     .transition(t)
@@ -302,13 +310,17 @@ function update(data, hoverd) {
   // Update the slider
   $("#year")[0].innerHTML = String(time + 1800);
   $("#date-slider").slider("value", Number(time + 1800));
+
+  // update tooltip position
+  if (time > 100) tip.direction("s");
+  else tip.direction("n");
 }
 
-const resetPixels = (w, y, l, b) => {
+function resetPixels(w, y, l, b) {
   MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
   WIDTH = w - MARGIN.LEFT - MARGIN.RIGHT;
   HEIGHT = y - MARGIN.TOP - MARGIN.BOTTOM;
-};
+}
 
 window.addEventListener("resize", (e) => {
   if (window.innerWidth <= 1320) {
@@ -318,4 +330,6 @@ window.addEventListener("resize", (e) => {
     resetPixels(650, 340, 100, 100);
     update(formattedData[time]);
   }
+
+  if (window.innerWidth <= 1320) tip.direction("s");
 });

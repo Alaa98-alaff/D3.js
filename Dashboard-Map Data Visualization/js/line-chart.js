@@ -39,6 +39,12 @@ d3.json(countiresDataUrl)
       });
     }
 
+    if (window.innerWidth <= 1320) {
+      resetPixels(520, 240, 80, 80);
+    } else {
+      resetPixels(650, 340, 100, 100);
+    }
+
     updateChart(lineData);
   })
   .catch((err) => console.log(err));
@@ -179,11 +185,11 @@ export function updateChart(data, countryData = "World") {
     countryLabel.text(countryData.properties.name);
 }
 
-const resetPixels = (w, y, l, b) => {
+function resetPixels(w, y, l, b) {
   MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
   WIDTH = w - MARGIN.LEFT - MARGIN.RIGHT;
   HEIGHT = y - MARGIN.TOP - MARGIN.BOTTOM;
-};
+}
 
 window.addEventListener("resize", (e) => {
   if (window.innerWidth <= 1320) {
