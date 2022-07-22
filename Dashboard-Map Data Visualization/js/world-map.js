@@ -37,19 +37,39 @@ export function handleData(time, data) {
   renderMap(geoData);
 }
 
+let clickedElIndex;
+const mapPaths = document.querySelector(".main-container").children;
+
 function handleMouseOver(data) {
-  d3.select(this).style("stroke", "black");
+  this.setAttribute("stroke", "black");
   getHoveredData(data.properties.name);
 }
 
 function handleMouseOut(data) {
-  d3.select(this).style("stroke", "none");
+  for (let i = 0; i < mapPaths.length; i++) {
+    if (i !== clickedElIndex) {
+      mapPaths[i].setAttribute("stroke", "none");
+    }
+  }
   handleUnHovered(data.properties.name);
 }
 
 function handleMouseEnter(data) {
+  for (let i = 0; i < mapPaths.length; i++) {
+    mapPaths[i].setAttribute("stroke", "none");
+    if (mapPaths[i] === this) clickedElIndex = i;
+  }
+
+  d3.select(this).attr("stroke", "black");
   handleEnterdPath(data);
 }
+
+// HANLDE CLICK outside the map
+document.querySelector(".charts").addEventListener("click", (e) => {
+  for (let i = 0; i < mapPaths.length; i++) {
+    mapPaths[i].setAttribute("stroke", "none");
+  }
+});
 
 function renderMap(data) {
   // JOIN new data with the old elements.

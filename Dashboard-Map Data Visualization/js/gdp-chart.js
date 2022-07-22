@@ -9,6 +9,8 @@ import { updateChart } from "./line-chart.js";
 
 export let time = 0; // represent year
 export let formattedData, interval, circles;
+let clickedCountry;
+let hoverdCountry;
 
 let MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
 let WIDTH = 650 - MARGIN.LEFT - MARGIN.RIGHT;
@@ -28,65 +30,76 @@ const g = svg
 export function getHoveredData(country) {
   // HANDLE WHEN PLAY BUTTON CLIKED
   clearInterval(interval);
+  hoverdCountry = country;
 
   // SET HOVERED COUNTRY
   formattedData[time].forEach((data) => {
-    if (data.country === country) {
-      data.hoverd = true;
-
-      // circles._groups[0].forEach((d) => {
-      //   if (d.getAttribute("country") === country) {
-      //     console.log(d);
-      //     g.append("rect")
-      //       .attr("class", "d3-tip-fix")
-      //       .attr(
-      //         "transform",
-      //         `translate(${195.71319812106694}, ${194.7188888888889})`
-      //       )
-      //       .text("continentffffffffffff");
-      //   }
-      // });
-    } else data.hoverd = false;
+    if (data.country === country) data.hoverd = true;
+    else if (!data.clicked) data.hoverd = false;
   });
   update(formattedData[time], true);
 }
 
-export function handleEnterdPath(data) {
+export function handleEnterdPath(mapData) {
   // HANDLE WHEN PLAY BUTTON CLIKED
   clearInterval(interval);
+  clickedCountry = mapData.properties.name;
 
+  // update line chart
   let lineData = [];
   for (let i = 0; i < 215; i++) {
     let totalPop = 0;
     for (let j = 0; j < formattedData[i].length; j++) {
-      if (formattedData[i][j].country === data.properties.name) {
+      if (formattedData[i][j].country === mapData.properties.name) {
         totalPop += formattedData[i][j].population;
         lineData.push({ year: i + 1800, popularity: totalPop });
       }
     }
   }
-  updateChart(lineData, data);
+  updateChart(lineData, mapData);
+
+  // update GDP chart
+  formattedData[time].forEach((data) => {
+    if (data.country === mapData.properties.name) {
+      data.clicked = true;
+    } else data.clicked = false;
+
+    if (clickedCountry && hoverdCountry) {
+      if (data.country !== clickedCountry) data.hoverd = false;
+      else data.hoverd = true;
+    }
+  });
+
+  update(formattedData[time], true);
 }
 
 export function handleUnHovered(country) {
   // HANDLE WHEN PLAY BUTTON CLIKED
   if ($("#play-button").text() === "Pause") interval = setInterval(step, 100);
-
   // SET HOVERED COUNTRY
   formattedData[time].forEach((data) => {
-    if (data.country === country) {
-      data.hoverd = false;
+    if (!clickedCountry) {
+      if (data.country === country) data.hoverd = false;
+      else data.hoverd = true;
+    }
 
-      // circles._groups[0].forEach((d) => {
-      //   d.setAttribute("stroke", "none");
-      // });
-    } else data.hoverd = true;
+    if (clickedCountry && hoverdCountry) {
+      if (data.country !== clickedCountry) data.hoverd = false;
+      else data.hoverd = true;
+    }
   });
   update(formattedData[time], true);
 }
 
+// HANLDE CLICK outside the map
+document.querySelector(".charts").addEventListener("click", (e) => {
+  clickedCountry = "";
+  hoverdCountry = "";
+  update(formattedData[time], false);
+});
+
 // TOOLTIP
-const tip = d3
+export const tip = d3
   .tip()
   .attr("class", "d3-tip")
   .html((d) => {
@@ -250,7 +263,7 @@ $("#date-slider").slider({
   },
 });
 
-function update(data, hoverd) {
+function update(data, interactive) {
   // UPDATE WIDTH AND HEIGHT
   svg
     .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
@@ -289,9 +302,7 @@ function update(data, hoverd) {
     .enter()
     .append("circle")
     .attr("fill", (d) => containerColor(d.continent))
-    .on("mouseover", (d) => {
-      tip.show(d);
-    })
+    .on("mouseover", tip.show)
     .on("mouseout", tip.hide)
     .merge(circles)
     .transition(t)
@@ -299,8 +310,8 @@ function update(data, hoverd) {
     .attr("cx", (d) => x(d.income))
     .attr("r", (d) => Math.sqrt(area(d.population) / Math.PI))
     .attr("opacity", (d) => {
-      if (hoverd && d.hoverd) return "1";
-      else if (hoverd && !d.hoverd) return "0";
+      if (!interactive || (interactive && d.hoverd)) return "1";
+      else if (interactive && !d.hoverd) return "0";
     })
     .attr("country", (d) => d.country);
 
@@ -312,7 +323,7 @@ function update(data, hoverd) {
   $("#date-slider").slider("value", Number(time + 1800));
 
   // update tooltip position
-  if (time > 100) tip.direction("s");
+  if (time > 100 || window.innerWidth <= 1320) tip.direction("s");
   else tip.direction("n");
 }
 
@@ -326,10 +337,9 @@ window.addEventListener("resize", (e) => {
   if (window.innerWidth <= 1320) {
     resetPixels(520, 240, 80, 80);
     update(formattedData[time]);
+    tip.direction("s");
   } else {
     resetPixels(650, 340, 100, 100);
     update(formattedData[time]);
   }
-
-  if (window.innerWidth <= 1320) tip.direction("s");
 });
