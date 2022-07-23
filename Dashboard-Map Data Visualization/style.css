@@ -104,6 +104,29 @@ path.domain {
   font-size: 1.6rem;
 }
 
+@media (max-width: 70rem) {
+  #slider-div {
+    margin-top: 1.25rem;
+  }
+
+  #slider-div div {
+    height: 2.8rem;
+  }
+
+  .ui-slider .ui-slider-handle {
+    width: 3.4rem;
+    height: 3.4rem;
+  }
+
+  #continent-select {
+    width: 20rem;
+    float: right;
+    height: 4rem;
+    margin-top: 1rem;
+    font-size: 1.9rem;
+  }
+}
+
 .year {
   font-size: 2.2rem;
   text-anchor: middle;

@@ -40,7 +40,7 @@ d3.json(countiresDataUrl)
     }
 
     if (window.innerWidth <= 1320) {
-      resetPixels(520, 240, 80, 80);
+      resetPixels(650, 320, 150, 150);
     } else {
       resetPixels(650, 340, 100, 100);
     }
@@ -193,7 +193,7 @@ function resetPixels(w, y, l, b) {
 
 window.addEventListener("resize", (e) => {
   if (window.innerWidth <= 1320) {
-    resetPixels(520, 240, 80, 80);
+    resetPixels(650, 320, 150, 150);
     updateChart(lineData);
   } else {
     resetPixels(650, 340, 100, 100);
