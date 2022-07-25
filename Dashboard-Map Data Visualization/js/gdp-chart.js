@@ -1,9 +1,11 @@
 import { handleData } from "./world-map.js";
 import {
   countiresDataUrl,
-  // MARGIN,
-  // WIDTH,
-  // HEIGHT,
+  tip,
+  continents,
+  WIDTH,
+  HEIGHT,
+  MARGIN,
 } from "../helpers/constants.js";
 import { updateChart } from "./line-chart.js";
 
@@ -11,10 +13,6 @@ export let time = 0; // represent year
 export let formattedData, interval, circles;
 let clickedCountry, hoverdCountry;
 let continentCountries = [];
-
-let MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
-let WIDTH = 650 - MARGIN.LEFT - MARGIN.RIGHT;
-let HEIGHT = 340 - MARGIN.TOP - MARGIN.BOTTOM;
 
 const svg = d3
   .select("#chart-area")
@@ -102,25 +100,7 @@ document.querySelector(".charts").addEventListener("click", (e) => {
   update(formattedData[time], false);
 });
 
-// TOOLTIP
-export const tip = d3
-  .tip()
-  .attr("class", "d3-tip")
-  .html((d) => {
-    let text = `<strong class= 'strong'>Country:</strong> <span class ='span-tip'>${d.country}</span><br>`;
-    text += `<strong class= 'strong'>Continent:</strong> <span class ='span-tip'>${d.continent}</span><br>`;
-    text += `<strong class= 'strong'>Life Expectancy:</strong> <span class ='span-tip'>${d3.format(
-      ".2f"
-    )(d.life_exp)}</span><br>`;
-    text += `<strong class= 'strong'>GDP Per Capita:</strong> <span class ='span-tip'>${d3.format(
-      "$,.0f"
-    )(d.income)}</span><br>`;
-    text += `<strong class= 'strong'>Population:</strong> <span class ='span-tip'>${d3.format(
-      ",.0f"
-    )(d.population)}</span><br>`;
-    return text;
-  });
-
+// Call toolTip on hover
 g.call(tip);
 
 // SCALES
@@ -147,9 +127,6 @@ const gx = g
 // Y axis
 const yAxisCall = d3.axisLeft(y);
 const gy = g.append("g").attr("class", `y axis`).call(yAxisCall);
-
-// LEGEND
-const continents = ["europe", "asia", "americas", "africa"];
 
 const legend = g
   .append("g")
@@ -215,12 +192,6 @@ d3.json(countiresDataUrl)
         });
     });
 
-    if (window.innerWidth <= 1320) {
-      resetPixels(650, 320, 150, 150);
-    } else {
-      resetPixels(650, 340, 100, 100);
-    }
-
     // first run for the visulaization
     update(formattedData[0]);
     handleData(time, formattedData, continentCountries);
@@ -247,8 +218,10 @@ $("#play-button").on("click", function () {
 
 $("#reset-button").on("click", () => {
   time = 0;
-  update(formattedData[0]);
+  document.getElementById("continent-select").value = "all";
+  continentCountries = [];
   handleData(0, formattedData, continentCountries);
+  update(formattedData[0]);
 });
 
 $("#continent-select").on("change", () => {
@@ -354,23 +327,5 @@ document.getElementById("continent-select").addEventListener("change", (e) => {
   } else {
     continentCountries = [];
     handleData(time, formattedData, continentCountries);
-  }
-});
-
-// Handle resize window
-function resetPixels(w, y, l, b) {
-  MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
-  WIDTH = w - MARGIN.LEFT - MARGIN.RIGHT;
-  HEIGHT = y - MARGIN.TOP - MARGIN.BOTTOM;
-}
-
-window.addEventListener("resize", (e) => {
-  if (window.innerWidth <= 1320) {
-    resetPixels(650, 320, 150, 150);
-    update(formattedData[time]);
-    tip.direction("s");
-  } else {
-    resetPixels(650, 340, 100, 100);
-    update(formattedData[time]);
   }
 });

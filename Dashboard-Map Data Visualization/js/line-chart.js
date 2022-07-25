@@ -1,15 +1,11 @@
 import {
   countiresDataUrl,
-  // HEIGHT,
-  // WIDTH,
-  // MARGIN,
+  WIDTH,
+  HEIGHT,
+  MARGIN,
 } from "../helpers/constants.js";
 
-let lineData = [];
-
-let MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
-let WIDTH = 650 - MARGIN.LEFT - MARGIN.RIGHT;
-let HEIGHT = 340 - MARGIN.TOP - MARGIN.BOTTOM;
+export let lineData = [];
 
 d3.json(countiresDataUrl)
   .then((data) => {
@@ -37,12 +33,6 @@ d3.json(countiresDataUrl)
         year: i + 1800,
         popularity: totalPop,
       });
-    }
-
-    if (window.innerWidth <= 1320) {
-      resetPixels(650, 320, 150, 150);
-    } else {
-      resetPixels(650, 340, 100, 100);
     }
 
     updateChart(lineData);
@@ -148,11 +138,9 @@ function updateAxes(data, chart, xScale, yScale) {
 
 function updatePath(data, line) {
   const updatedPath = path.interrupt().datum(data).attr("d", line);
-
   const pathLength = updatedPath.node().getTotalLength();
-  // D3 provides lots of transition options, have a play around here:
-  // https://github.com/d3/d3-transition
   const transitionPath = d3.transition().ease(d3.easeSin).duration(2000);
+
   updatedPath
     .attr("stroke-dashoffset", pathLength)
     .attr("stroke-dasharray", pathLength)
@@ -184,19 +172,3 @@ export function updateChart(data, countryData = "World") {
   else if (countryData !== "World")
     countryLabel.text(countryData.properties.name);
 }
-
-function resetPixels(w, y, l, b) {
-  MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
-  WIDTH = w - MARGIN.LEFT - MARGIN.RIGHT;
-  HEIGHT = y - MARGIN.TOP - MARGIN.BOTTOM;
-}
-
-window.addEventListener("resize", (e) => {
-  if (window.innerWidth <= 1320) {
-    resetPixels(650, 320, 150, 150);
-    updateChart(lineData);
-  } else {
-    resetPixels(650, 340, 100, 100);
-    updateChart(lineData);
-  }
-});

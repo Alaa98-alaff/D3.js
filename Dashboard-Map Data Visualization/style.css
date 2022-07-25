@@ -40,19 +40,13 @@ text {
 
 .lineDots:hover {
   fill-opacity: 1;
-  stroke-width: 10px;
+  stroke-width: 1rem;
 }
 
 path.domain {
   fill: none;
   opacity: 0.4;
 }
-
-/* .d3-tip-fix {
-  width: 100px;
-  height: 100px;
-  fill: rgba(255, 0, 0, 0.173);
-} */
 
 .d3-tip {
   background-color: rgba(128, 128, 128, 0.1);
