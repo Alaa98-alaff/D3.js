@@ -1,4 +1,4 @@
-export function filterMapData(geoData, data, time) {
+export function filterMapData(geoData, data, time, countries) {
   for (let i = 0; i < geoData.features.length; i++) {
     for (let j = 0; j < data[time].length; j++) {
       if (geoData.features[i].properties.name === data[time][j].country) {
@@ -110,5 +110,17 @@ export function filterMapData(geoData, data, time) {
         geoData.features[i].properties.name === "Bahamas";
       }
     }
+  }
+
+  if (countries) {
+    geoData.features.forEach((d) => {
+      if (countries.includes(d.properties.name)) {
+        d.selectedCountry = true;
+      } else {
+        d.selectedCountry = false;
+      }
+    });
+  } else {
+    geoData.features.forEach((d) => (d.selectedCountry = false));
   }
 }

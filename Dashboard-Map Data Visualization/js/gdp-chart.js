@@ -9,8 +9,8 @@ import { updateChart } from "./line-chart.js";
 
 export let time = 0; // represent year
 export let formattedData, interval, circles;
-let clickedCountry;
-let hoverdCountry;
+let clickedCountry, hoverdCountry;
+let continentCountries = [];
 
 let MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
 let WIDTH = 650 - MARGIN.LEFT - MARGIN.RIGHT;
@@ -70,6 +70,7 @@ export function handleEnterdPath(mapData) {
     }
   });
 
+  continentCountries = [];
   update(formattedData[time], true);
 }
 
@@ -83,9 +84,11 @@ export function handleUnHovered(country) {
       else data.hoverd = true;
     }
 
-    if (clickedCountry && hoverdCountry) {
+    if (clickedCountry && hoverdCountry && !continentCountries.length) {
       if (data.country !== clickedCountry) data.hoverd = false;
       else data.hoverd = true;
+    } else if (clickedCountry && hoverdCountry && continentCountries.length) {
+      data.hoverd = true;
     }
   });
   update(formattedData[time], true);
@@ -95,6 +98,7 @@ export function handleUnHovered(country) {
 document.querySelector(".charts").addEventListener("click", (e) => {
   clickedCountry = "";
   hoverdCountry = "";
+  continentCountries = [];
   update(formattedData[time], false);
 });
 
@@ -219,14 +223,14 @@ d3.json(countiresDataUrl)
 
     // first run for the visulaization
     update(formattedData[0]);
-    handleData(time, formattedData);
+    handleData(time, formattedData, continentCountries);
   })
   .catch((err) => console.log(err));
 
 function step() {
   time < 214 ? time++ : (time = 0);
   update(formattedData[time]);
-  handleData(time, formattedData);
+  handleData(time, formattedData, continentCountries);
 }
 
 $("#play-button").on("click", function () {
@@ -244,12 +248,12 @@ $("#play-button").on("click", function () {
 $("#reset-button").on("click", () => {
   time = 0;
   update(formattedData[0]);
-  handleData(0, formattedData);
+  handleData(0, formattedData, continentCountries);
 });
 
 $("#continent-select").on("change", () => {
   update(formattedData[time]);
-  handleData(time, formattedData);
+  handleData(time, formattedData, continentCountries);
 });
 
 $("#date-slider").slider({
@@ -259,7 +263,7 @@ $("#date-slider").slider({
   slide: (event, ui) => {
     time = ui.value - 1800;
     update(formattedData[time]);
-    handleData(time, formattedData);
+    handleData(time, formattedData, continentCountries);
   },
 });
 
@@ -313,6 +317,10 @@ function update(data, interactive) {
       if (!interactive || (interactive && d.hoverd)) return "1";
       else if (interactive && !d.hoverd) return "0";
     })
+    .attr("display", (d) => {
+      if (!interactive || (interactive && d.hoverd)) return "1";
+      else if (interactive && !d.hoverd) return "none";
+    })
     .attr("country", (d) => d.country);
 
   // update the time label
@@ -327,6 +335,29 @@ function update(data, interactive) {
   else tip.direction("n");
 }
 
+// Handle continent filtering
+document.getElementById("continent-select").addEventListener("change", (e) => {
+  const fiterdData = formattedData[time].filter((d) => {
+    if (e.target.value === "all") return true;
+    else {
+      return d.continent === e.target.value;
+    }
+  });
+
+  if (e.target.value !== "all") {
+    continentCountries = [];
+    fiterdData.forEach((countries) => {
+      continentCountries.push(countries.country);
+    });
+
+    handleData(time, formattedData, continentCountries);
+  } else {
+    continentCountries = [];
+    handleData(time, formattedData, continentCountries);
+  }
+});
+
+// Handle resize window
 function resetPixels(w, y, l, b) {
   MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 };
   WIDTH = w - MARGIN.LEFT - MARGIN.RIGHT;

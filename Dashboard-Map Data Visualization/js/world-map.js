@@ -5,7 +5,7 @@ import {
 } from "./gdp-chart.js";
 import { filterMapData } from "../helpers/filterMapData.js";
 
-let geoData;
+let geoData, selectedCont;
 
 // Get the world map DATA
 d3.json(
@@ -32,25 +32,29 @@ let colorScale = d3
 
 const mapG = mapSVG.append("g").attr("class", "main-container");
 
-export function handleData(time, data) {
-  filterMapData(geoData, data, time);
-  renderMap(geoData);
+export function handleData(time, data, countries) {
+  filterMapData(geoData, data, time, countries);
+  renderMap(geoData, countries);
 }
 
 let clickedElIndex;
 const mapPaths = document.querySelector(".main-container").children;
 
 function handleMouseOver(data) {
-  this.setAttribute("stroke", "black");
+  if (!selectedCont) this.setAttribute("stroke", "black");
   getHoveredData(data.properties.name);
 }
 
 function handleMouseOut(data) {
   for (let i = 0; i < mapPaths.length; i++) {
-    if (i !== clickedElIndex) {
+    if (
+      i !== clickedElIndex &&
+      mapPaths[i].getAttribute("stroke") !== "purple"
+    ) {
       mapPaths[i].setAttribute("stroke", "none");
     }
   }
+
   handleUnHovered(data.properties.name);
 }
 
@@ -61,6 +65,8 @@ function handleMouseEnter(data) {
   }
 
   d3.select(this).attr("stroke", "black");
+
+  document.getElementById("continent-select").value = "all";
   handleEnterdPath(data);
 }
 
@@ -69,6 +75,7 @@ document.querySelector(".charts").addEventListener("click", (e) => {
   for (let i = 0; i < mapPaths.length; i++) {
     mapPaths[i].setAttribute("stroke", "none");
   }
+  document.getElementById("continent-select").value = "all";
 });
 
 function renderMap(data) {
@@ -82,12 +89,20 @@ function renderMap(data) {
   paths
     .enter()
     .append("path")
+    .attr("country", (d) => d.properties.name)
     // draw each country
     .attr("d", d3.geoPath().projection(projection))
     //   set the color of each country
     .attr("fill", (d) => colorScale(d.total))
+    .attr("selected-country", (d) => d.selectedCountry)
     .merge(paths)
+    .attr("stroke", (d) => (d.selectedCountry ? "purple" : "none"))
     .on("mouseover", handleMouseOver)
     .on("mouseout", handleMouseOut)
     .on("click", handleMouseEnter);
 }
+
+document.getElementById("continent-select").addEventListener("change", (e) => {
+  clickedElIndex = undefined;
+  if (e.target.value !== "all") selectedCont = true;
+});
